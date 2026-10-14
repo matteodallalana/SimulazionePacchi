@@ -1,0 +1,90 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+interface CentroSmistamento {
+    + assegnaPacco() : Pacco
+    + getPacchiIniziali() : int
+    + getPacchiAssegnati() : int
+    + getPacchiRimanenti() : int
+    + getRegistroAssegnazioni() : List
+}
+
+class CentroSicuro {
+    - int iniziali
+    - Deque disponibili
+    - List registro
+    - long ritardoMs
+    + CentroSicuro(int pacchi, long ritardoMs)
+    + assegnaPacco() : Pacco
+    + getPacchiIniziali() : int
+    + getPacchiAssegnati() : int
+    + getPacchiRimanenti() : int
+    + getRegistroAssegnazioni() : List
+    - pausa() : void
+}
+
+class CentroNonSicuro {
+    - int iniziali
+    - int disponibili
+    - int assegnati
+    - List registro
+    - long ritardoMs
+    + CentroNonSicuro(int pacchi, long ritardoMs)
+    + assegnaPacco() : Pacco
+    + getPacchiIniziali() : int
+    + getPacchiAssegnati() : int
+    + getPacchiRimanenti() : int
+    + getRegistroAssegnazioni() : List
+    - pausa() : void
+}
+
+class Pacco {
+    + int id()
+}
+
+class Operatore {
+    - int id
+    - CentroSmistamento centro
+    - Statistiche stats
+    - long lavoroMs
+    - int pacchiAssegnati
+    + Operatore(int id, CentroSmistamento centro, Statistiche stats, long lavoroMs)
+    + run() : void
+    - preparaSpedizione() : void
+    + getId() : int
+    + getPacchiAssegnati() : int
+}
+
+class Statistiche {
+    - AtomicInteger tentativi
+    - AtomicInteger riuscite
+    - AtomicInteger fallite
+    + registraTentativo() : void
+    + registraSuccesso() : void
+    + registraFallimento() : void
+    + getTentativi() : int
+    + getRiuscite() : int
+    + getFallite() : int
+}
+
+class Simulazione {
+    {static} + main(String[] args) : void
+    {static} - stampaReport(boolean sicuro, CentroSmistamento c, Statistiche s, List addetti) : void
+}
+
+class DemoContatori {
+    {static} + main(String[] args) : void
+}
+
+CentroSmistamento <|.. CentroSicuro
+CentroSmistamento <|.. CentroNonSicuro
+Runnable <|.. Operatore
+Operatore --> CentroSmistamento : usa
+Operatore --> Statistiche : usa
+Simulazione --> CentroSmistamento : crea/usa
+Simulazione --> Statistiche : crea/usa
+Simulazione --> Operatore : crea/usa
+CentroSicuro --> Pacco : gestisce
+CentroNonSicuro --> Pacco : gestisce
+
+@enduml
